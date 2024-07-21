@@ -137,7 +137,6 @@ export const processOrder = TryCatch(
 );
 
 export const deleteOrder = TryCatch(async (req, resp, next) => {
-
     const { id } = req.params;
     const order = await Order.findById(id);
 

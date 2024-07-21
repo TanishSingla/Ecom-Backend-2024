@@ -70,7 +70,51 @@ export const calculatePercentage = (thisMonth: number, lastMonth: number) => {
 
     //for calculating relative percentage
     if (lastMonth === 0) return thisMonth * 100;
-    const percent = ((thisMonth - lastMonth) / lastMonth) * 100;
+    const percent = (thisMonth / lastMonth) * 100;
     return Number(percent.toFixed(0));
 
+}
+
+export const GetInventory = async ({ categories, productCount }: { categories: string[], productCount: number }) => {
+
+    const categoriesCountPromise = categories.map((category) => Product.countDocuments({ category }))
+
+    const categoriesCount = await Promise.all(categoriesCountPromise);
+
+    const categoryCount: Record<string, number>[] = [];
+
+    categories.forEach((cat, i) => {
+        categoryCount.push({
+            [cat]: Math.round((categoriesCount[i] / productCount) * 100),
+        })
+    })
+    return categoryCount;
+}
+
+
+interface MyDocument extends Document {
+    createdAt: Date;
+}
+
+type funcProps = {
+    length: number;
+    docArr: MyDocument[];
+    today: Date
+}
+
+export const getChartData = ({ length, docArr, today }: funcProps) => {
+
+    const data: number[] = new Array(6).fill(0);
+
+    docArr.forEach((i) => {
+        const creationDate = i.createdAt;
+        const monthDiff = (today.getMonth() - creationDate.getMonth() + 12) % 12;
+
+        if (monthDiff < length) {
+            data[length - monthDiff] += 1;
+            // orderMonthlyRevenue[5 - monthDiff] += order.total;
+        }
+    });
+
+    return data;
 }
