@@ -33,7 +33,7 @@ export const newProduct = TryCatch(async (req: Request<{}, {}, NewProductRequest
     });
 
     //clearing cache
-    await invalidateCache({ product: true });
+    invalidateCache({ product: true, admin: true });
 
     return resp.status(201).json({
         success: true,
@@ -166,7 +166,7 @@ export const updateProduct = TryCatch(async (req, resp, next) => {
     await product.save();
 
     //clearing cache
-    await invalidateCache({ product: true });
+    invalidateCache({ product: true, admin: true });
 
     return resp.status(200).json({
         success: true,
@@ -188,7 +188,7 @@ export const deleteProduct = TryCatch(async (req, resp, next) => {
     await Product.deleteOne();
 
     //clearing cache
-    await invalidateCache({ product: true });
+    invalidateCache({ product: true, admin: true });
 
     return resp.status(200).json({
         success: true,
